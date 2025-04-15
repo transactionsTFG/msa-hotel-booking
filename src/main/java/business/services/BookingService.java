@@ -1,10 +1,18 @@
 package business.services;
 
 import business.booking.BookingDTO;
+import business.booking.BookingWithLinesDTO;
 import business.dto.CreateBookingDTO;
 
 public interface BookingService {
-    BookingDTO beginCreateBooking(CreateBookingDTO createBookingDTO);
-    void confirmCreateBooking(long bookingId);
-    void cancelCreateBooking(long bookingId);
+
+    boolean createBookingAsync(CreateBookingDTO createBookingDTO);
+
+    BookingDTO createBookingSync(BookingDTO bookingDTO);
+
+    boolean validateSagaId(long bookingId, String sagaId);
+
+    boolean updateOnlyReservation(BookingDTO bookingDTO);
+
+    boolean updateBooking(BookingWithLinesDTO booking);
 }

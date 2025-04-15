@@ -16,6 +16,7 @@ import msa.commons.event.EventId;
 import msa.commons.consts.JMSQueueNames;
 import msa.commons.consts.PropertiesConsumer;
 import msa.commons.event.Event;
+import msa.commons.event.EventData;
 
 @Stateless
 public class JMSEventPublisher implements IJMSEventPublisher {
@@ -25,7 +26,7 @@ public class JMSEventPublisher implements IJMSEventPublisher {
     private Gson gson;
 
     @Override
-    public void publish(EventId eventId, Object data) {
+    public void publish(EventId eventId, EventData data) {
         try (JMSContext jmsContext = connectionFactory.createContext()) {
             Event sendMsg = new Event(eventId, data);
             final String msg = this.gson.toJson(sendMsg);
@@ -35,7 +36,7 @@ public class JMSEventPublisher implements IJMSEventPublisher {
                     eventId, msg);
             jmsContext.createProducer().send(this.orchestratorQueue, txt);
         } catch (Exception e) {
-            LOGGER.error("Error al publiar el mensaje: {}", e.getMessage());
+            LOGGER.error("Error al publicar el mensaje: {}", e.getMessage());
         }
     }
 

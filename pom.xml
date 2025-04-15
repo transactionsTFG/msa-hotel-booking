@@ -3,10 +3,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ucm.tfg</groupId>
-    <artifactId>msa-hotelbooking</artifactId>
+    <artifactId>msa-hotel-booking</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
-    <name>msa-hotelbooking</name>
+    <name>msa-hotel-booking</name>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -70,7 +70,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>msa-hotelbooking</finalName>
+        <finalName>msa-hotel-booking</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

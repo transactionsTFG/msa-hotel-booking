@@ -13,29 +13,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.dto.CreateBookingDTO;
-import business.servicesevent.BookingServiceEventAdapter;
+import business.services.BookingService;
 
 @Path("/bookings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BookingController {
+
     private static final Logger LOGGER = LogManager.getLogger(BookingController.class);
-    private BookingServiceEventAdapter bookingServiceEventAdapter;
-    
+    private BookingService bookingService;
+
     @EJB
-    public void setBookingService(BookingServiceEventAdapter bookingServiceEventAdapter) {
-        this.bookingServiceEventAdapter = bookingServiceEventAdapter;
+    public void setBookingService(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
-    
 
     @POST
     @Transactional
-    public Response createBooking(CreateBookingDTO createBookingDTO) {
-        LOGGER.info("Creando reserva de hotel: {}", createBookingDTO);
-        boolean isCreated = bookingServiceEventAdapter.beginCreateBooking(createBookingDTO);
-        if (!isCreated)
-            return Response.status(Response.Status.CONFLICT).entity("Cliente o habitaciones no disponibles").build();
-        return Response.status(Response.Status.CREATED).entity("Reserva de hotel creada correctamente").build();
+    public Response createBooking(CreateBookingDTO booking) {
+        LOGGER.info("Iniciando creacion de reserva: {}", booking);
+        boolean success = this.bookingService.createBookingAsync(booking);
+
+        if (success)
+            return Response.status(Response.Status.CREATED).entity("La creacion de la reserva se ha inicado").build();
+
+        return Response.status(Response.Status.NOT_ACCEPTABLE).entity("No se cumplen las reglas de negocio").build();
     }
-    
+
 }

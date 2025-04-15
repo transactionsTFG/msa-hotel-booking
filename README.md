@@ -1,2 +1,2 @@
-# msa-hotelbooking
+# msa-hotel-booking
 Microservicio de Reserva de Hotel 

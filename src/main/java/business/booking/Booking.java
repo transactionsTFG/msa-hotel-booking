@@ -53,6 +53,9 @@ public class Booking implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SagaPhases status;
+    private SagaPhases statusSaga;
+
+    @Column(name = "saga_id", nullable = false)
+    private String sagaId;
 
 }

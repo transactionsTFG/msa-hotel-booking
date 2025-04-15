@@ -5,9 +5,9 @@
     version="3.0">
 
     <persistence-unit name="poolMSAHotelBooking" transaction-type="JTA">
-        <jta-data-source>jdbc/msa-hotelbooking</jta-data-source>
+        <jta-data-source>jdbc/msaHotelBooking</jta-data-source>
         <properties>
-            <property name="javax.persistence.jtaDataSource" value="jdbc/msa-hotelbooking" />
+            <property name="javax.persistence.jtaDataSource" value="jdbc/msaHotelBooking" />
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
         </properties>
     </persistence-unit>

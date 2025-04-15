@@ -6,21 +6,23 @@ import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import com.google.gson.Gson;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import domainevent.command.handler.EventHandler;
+import com.google.gson.Gson;
+
+import domainevent.command.handler.CommandHandler;
 import domainevent.registry.EventHandlerRegistry;
 import msa.commons.consts.JMSQueueNames;
 import msa.commons.event.Event;
 
 @MessageDriven(mappedName = JMSQueueNames.AGENCY_HOTEL_BOOKING_SERVICE_QUEUE)
-public class DomainEventConsumerBookingService implements MessageListener {
+public class CommandConsumerBookingService implements MessageListener {
 
     private Gson gson;
     private EventHandlerRegistry eventHandlerRegistry;
-    private static final Logger LOGGER = LogManager.getLogger(DomainEventConsumerBookingService.class);
+    private static final Logger LOGGER = LogManager.getLogger(CommandConsumerBookingService.class);
 
     @Inject
     public void setGson(Gson gson) {
@@ -37,11 +39,12 @@ public class DomainEventConsumerBookingService implements MessageListener {
         try {
             if (msg instanceof TextMessage m) {
                 Event event = this.gson.fromJson(m.getText(), Event.class);
-                LOGGER.info("Recibido en cola {}, Evento Id: {}, Mensaje: {}", JMSQueueNames.AGENCY_HOTEL_BOOKING_SERVICE_QUEUE,
-                        event.getEventId(), event.getData().toString());
-                EventHandler handler = this.eventHandlerRegistry.getHandler(event.getEventId());
-                if (handler != null) 
-                    handler.handleCommand(event.getData());
+                LOGGER.info("Recibido en cola {}, Evento Id: {}, Mensaje: {}",
+                        JMSQueueNames.AGENCY_HOTEL_BOOKING_SERVICE_QUEUE,
+                        event.getEventId(), event.getValue().toString());
+                CommandHandler handler = this.eventHandlerRegistry.getHandler(event.getEventId());
+                if (handler != null)
+                    handler.publishCommand(this.gson.toJson(event.getValue()));
             }
         } catch (Exception e) {
             LOGGER.error("Error al recibir el mensaje: {}", e.getMessage());
