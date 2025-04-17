@@ -21,6 +21,7 @@ public class ConfirmCheckRoomsAvailabilityByCreateHotelBookingEvent extends Base
     public void publishCommand(String json) {
 
         LOGGER.info("JSON recibido: {}", json);
+        LOGGER.info("Unimplemented method 'publishCommand'");
 
         
     }

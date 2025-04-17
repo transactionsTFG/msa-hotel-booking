@@ -110,6 +110,9 @@ public class BookingServiceImpl implements BookingService {
     public boolean updateOnlyReservation(BookingDTO bookingDTO) {
         Booking booking = this.entityManager.find(Booking.class, bookingDTO.getId());
 
+        if (booking == null)
+            return false;
+
         booking.setAvailable(bookingDTO.isAvailable());
         booking.setUserId(bookingDTO.getUserId());
         booking.setStatusSaga(bookingDTO.getStatusSaga());
@@ -156,7 +159,8 @@ public class BookingServiceImpl implements BookingService {
     public boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO) {
 
         List<RoomInfo> rooms = createHotelBookingDTO.getRoomsInfo();
-
+        if (rooms == null)
+            return false;
         for (RoomInfo roomInfo : rooms) {
             TypedQuery<BookingLine> query = this.entityManager
                     .createNamedQuery("business.bookingLine.BookingLine.findByRoomId", BookingLine.class);

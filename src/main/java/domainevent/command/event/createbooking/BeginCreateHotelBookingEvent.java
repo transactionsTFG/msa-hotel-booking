@@ -42,6 +42,16 @@ public class BeginCreateHotelBookingEvent extends BaseHandler {
 
         EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
                 CreateHotelBookingCommand.builder()
+                        .sagaId(sagaId)
+                        .bookingId(bookingDTO.getId())
+                        .userId(Long.parseLong(createBookingDTO.getUserId()))
+                        .startDate(createBookingDTO.getStartDate())
+                        .endDate(createBookingDTO.getEndDate())
+                        .numberOfNights(createBookingDTO.getNumberOfNights())
+                        .withBreakfast(createBookingDTO.getWithBreakfast())
+                        .peopleNumber(createBookingDTO.getPeopleNumber())
+                        .customerDNI(createBookingDTO.getCustomerDNI())
+                        .roomsInfo(createBookingDTO.getRoomsInfo())
                         .customerInfo(BookingCreationMapper.dtoToCustomerInfo(createBookingDTO.getCustomer()))
                         .build());
 

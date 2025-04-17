@@ -27,19 +27,27 @@ public class CheckRoomsAvailabilityByCreateHotelBookingEvent extends BaseHandler
     public void publishCommand(String json) {
 
         LOGGER.info("JSON recibido: {}", json);
-        CreateHotelBookingDTO createHotelBookingDTO = this.gson.fromJson(json, CreateHotelBookingDTO.class);
+        EventData data = EventData.fromJson(json, CreateHotelBookingCommand.class);
+        CreateHotelBookingCommand command = (CreateHotelBookingCommand) data.getData();
+
+        CreateHotelBookingDTO createHotelBookingDTO = CreateHotelBookingDTO.builder()
+                .roomsInfo(command.getRoomsInfo())
+                .startDate(command.getStartDate())
+                .endDate(command.getEndDate())
+                .build();
 
         boolean areRoomsAvailable = this.bookingService.checkRoomsAvailability(createHotelBookingDTO);
 
-        EventData eventData = new EventData(createHotelBookingDTO.getSagaId(), Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
-                CreateHotelBookingCommand.builder()
-                        .bookingId(createHotelBookingDTO.getBookingId())
-                        .build());
+        EventData eventData = new EventData(data.getSagaId(),
+                Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
+                command);
 
         if (areRoomsAvailable) {
-            this.jmsCommandPublisher.publish(EventId.CONFIRM_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING, eventData);
+            this.jmsCommandPublisher.publish(EventId.CONFIRM_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,
+                    eventData);
         } else {
-            this.jmsCommandPublisher.publish(EventId.CANCEL_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING, eventData);
+            this.jmsCommandPublisher.publish(EventId.CANCEL_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,
+                    eventData);
         }
 
     }

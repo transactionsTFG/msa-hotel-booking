@@ -1,5 +1,29 @@
 package domainevent.command.event.checkroomsavailability;
 
-public class CancelCheckRoomsAvailabilityByCreateHotelBookingEvent {
-    
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import domainevent.command.handler.BaseHandler;
+import domainevent.command.handler.CommandHandler;
+import msa.commons.microservices.hotelbooking.qualifier.CancelCheckRoomsAvailabilityByCreateHotelBookingEventQualifier;
+
+@Stateless
+@CancelCheckRoomsAvailabilityByCreateHotelBookingEventQualifier
+@Local(CommandHandler.class)
+public class CancelCheckRoomsAvailabilityByCreateHotelBookingEvent extends BaseHandler {
+
+    private static final Logger LOGGER = LogManager
+            .getLogger(CancelCheckRoomsAvailabilityByCreateHotelBookingEvent.class);
+
+    @Override
+    public void publishCommand(String json) {
+
+        LOGGER.info("JSON recibido: {}", json);
+        LOGGER.info("Unimplemented method 'publishCommand'");
+
+    }
+
 }

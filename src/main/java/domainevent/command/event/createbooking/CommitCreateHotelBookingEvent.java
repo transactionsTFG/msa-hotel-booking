@@ -1,5 +1,6 @@
 package domainevent.command.event.createbooking;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -28,11 +29,13 @@ public class CommitCreateHotelBookingEvent extends BaseHandler {
     @Override
     public void publishCommand(String json) {
         LOGGER.info("***** INICIAMOS COMMIT SAGA CREACION DE RESERVA *****");
+        LOGGER.info("JSON recibido: {}", json);
         EventData eventData = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand command = (CreateHotelBookingCommand) eventData.getData();
 
         if (!this.bookingService.validateSagaId(command.getBookingId(), eventData.getSagaId())) {
-            this.jmsCommandPublisher.publish(EventId.ROLLBACK_CREATE_HOTEL_BOOKING, eventData);
+            this.jmsCommandPublisher.publish(EventId.ROLLBACK_CREATE_HOTEL_BOOKING, new EventData(eventData.getSagaId(),
+                    Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING), eventData));
         } else {
 
             BookingDTO bookingDTO = BookingDTO.builder()

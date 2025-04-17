@@ -28,6 +28,7 @@ public class JMSEventPublisher implements IJMSEventPublisher {
     @Override
     public void publish(EventId eventId, EventData data) {
         try (JMSContext jmsContext = connectionFactory.createContext()) {
+            LOGGER.info("EventData recibido: {}", data);
             Event sendMsg = new Event(eventId, data);
             final String msg = this.gson.toJson(sendMsg);
             TextMessage txt = jmsContext.createTextMessage(msg);
