@@ -16,19 +16,18 @@ import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
 import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCommand;
-import msa.commons.microservices.hotelbooking.qualifier.CommitCreateBookingEventQualifier;
+import msa.commons.microservices.hotelbooking.qualifier.CommitCreateHotelBookingEventQualifier;
 import msa.commons.saga.SagaPhases;
 
 @Stateless
-@CommitCreateBookingEventQualifier
+@CommitCreateHotelBookingEventQualifier
 @Local(CommandHandler.class)
-public class CommitCreateBookingEvent extends BaseHandler {
-    private static final Logger LOGGER = LogManager.getLogger(CommitCreateBookingEvent.class);
+public class CommitCreateHotelBookingEvent extends BaseHandler {
+    private static final Logger LOGGER = LogManager.getLogger(CommitCreateHotelBookingEvent.class);
 
     @Override
     public void publishCommand(String json) {
         LOGGER.info("***** INICIAMOS COMMIT SAGA CREACION DE RESERVA *****");
-
         EventData eventData = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand command = (CreateHotelBookingCommand) eventData.getData();
 

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class UpdateBookingDTO {
-    private CreateBookingDTO bookingDTO;
+    private CreateHotelBookingDTO bookingDTO;
     private String id;
 }

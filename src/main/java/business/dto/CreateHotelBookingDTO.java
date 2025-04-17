@@ -2,13 +2,19 @@ package business.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import msa.commons.microservices.hotelroom.commandevent.model.RoomInfo;
 
 @Data
 @Builder
-public class CreateBookingDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateHotelBookingDTO {
+    private long bookingId;
+    private String sagaId;
     private CustomerDTO customer;
     private String startDate;
     private String endDate;

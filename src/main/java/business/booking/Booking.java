@@ -58,4 +58,17 @@ public class Booking implements Serializable {
     @Column(name = "saga_id", nullable = false)
     private String sagaId;
 
+    public BookingDTO toDTO() {
+        return BookingDTO.builder()
+                .id(id)
+                .withBreakfast(withBreakfast)
+                .peopleNumber(peopleNumber)
+                .userId(userId)
+                .available(available)
+                .totalPrice(totalPrice)
+                .sagaId(sagaId)
+                .statusSaga(statusSaga)
+                .build();
+    }
+
 }

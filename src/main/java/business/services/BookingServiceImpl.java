@@ -7,6 +7,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.TypedQuery;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
@@ -15,10 +19,11 @@ import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.bookingline.BookingLine;
 import business.bookingline.BookingLineDTO;
-import business.dto.CreateBookingDTO;
-import business.mapper.BookingMapper;
+import business.dto.CreateHotelBookingDTO;
+import business.validators.DateValidator;
 import domainevent.registry.EventHandlerRegistry;
 import msa.commons.event.EventId;
+import msa.commons.microservices.hotelroom.commandevent.model.RoomInfo;
 import validator.CustomerSyntaxValidator;
 
 @Stateless
@@ -28,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private EventHandlerRegistry eventHandlerRegistry;
     private Gson gson;
     private CustomerSyntaxValidator customerSyntaxValidator;
+    private static final Logger LOGGER = LogManager.getLogger(BookingServiceImpl.class);
 
     public BookingServiceImpl() {
     }
@@ -43,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @EJB
-    public void setCommandHandlerRegistry(EventHandlerRegistry eventHandlerRegistry) {
+    public void setEventHandlerRegistry(EventHandlerRegistry eventHandlerRegistry) {
         this.eventHandlerRegistry = eventHandlerRegistry;
     }
 
@@ -58,12 +64,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public boolean createBookingAsync(CreateBookingDTO createBookingDTO) {
-
+    public boolean createBookingAsync(CreateHotelBookingDTO createBookingDTO) {
+        LOGGER.info("Validando datos del cliente: {}", createBookingDTO.getCustomer());
         if (!this.customerSyntaxValidator.isValid(createBookingDTO.getCustomer())) {
             return false;
         }
-
+        LOGGER.info("Publicando comando {}", EventId.BEGIN_CREATE_HOTEL_BOOKING);
         this.eventHandlerRegistry.getHandler(EventId.BEGIN_CREATE_HOTEL_BOOKING)
                 .publishCommand(this.gson.toJson(createBookingDTO));
 
@@ -81,11 +87,13 @@ public class BookingServiceImpl implements BookingService {
         booking.setAvailable(bookingDTO.isAvailable());
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setSagaId(bookingDTO.getSagaId());
+        booking.setStatusSaga(bookingDTO.getStatusSaga());
 
         this.entityManager.persist(booking);
         this.entityManager.flush();
 
-        return BookingMapper.INSTANCE.entityToDTO(booking);
+        return booking.toDTO();
+        // return BookingMapper.INSTANCE.entityToDTO(booking);
 
     }
 
@@ -122,6 +130,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setPeopleNumber(bookingDto.getPeopleNumber());
         booking.setAvailable(true);
         booking.setTotalPrice(0);
+        booking.setStatusSaga(bookingDto.getStatusSaga());
         bookingLines.forEach(bl -> {
             BookingLine bookingLine = new BookingLine();
 
@@ -139,6 +148,29 @@ public class BookingServiceImpl implements BookingService {
         });
 
         this.entityManager.merge(booking);
+
+        return true;
+    }
+
+    @Override
+    public boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO) {
+
+        List<RoomInfo> rooms = createHotelBookingDTO.getRoomsInfo();
+
+        for (RoomInfo roomInfo : rooms) {
+            TypedQuery<BookingLine> query = this.entityManager
+                    .createNamedQuery("business.bookingLine.BookingLine.findByRoomId", BookingLine.class);
+            query.setParameter("roomId", roomInfo.getRoomId());
+
+            for (BookingLine bookingLine : query.getResultList()) {
+
+                if (!DateValidator.validateDates(createHotelBookingDTO.getStartDate(),
+                        createHotelBookingDTO.getEndDate(), bookingLine.getStartDate(), bookingLine.getEndDate())) {
+                    return false;
+                }
+            }
+
+        }
 
         return true;
     }

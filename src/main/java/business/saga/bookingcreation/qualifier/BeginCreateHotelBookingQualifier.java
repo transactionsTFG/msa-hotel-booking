@@ -9,6 +9,6 @@ import javax.inject.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER })
 @Qualifier
-public @interface BeginCreateBookingQualifier {
+public @interface BeginCreateHotelBookingQualifier {
 
 }

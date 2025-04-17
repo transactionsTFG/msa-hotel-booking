@@ -1,17 +1,14 @@
 package business.saga.bookingcreation.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
 import business.dto.CustomerDTO;
 import msa.commons.microservices.reservationairline.commandevent.model.CustomerInfo;
 
-@Mapper
+// @Mapper
 public interface BookingCreationMapper {
 
-    BookingCreationMapper INSTANCE = Mappers.getMapper(BookingCreationMapper.class);
+    // BookingCreationMapper INSTANCE = Mappers.getMapper(BookingCreationMapper.class);
 
-    default CustomerInfo dtoToCustomerInfo(CustomerDTO customerDTO) {
+    static CustomerInfo dtoToCustomerInfo(CustomerDTO customerDTO) {
 
         if (customerDTO == null)
             return null;

@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import business.dto.CreateBookingDTO;
+import business.dto.CreateHotelBookingDTO;
 import business.services.BookingService;
 
 @Path("/bookings")
@@ -30,7 +30,7 @@ public class BookingController {
 
     @POST
     @Transactional
-    public Response createBooking(CreateBookingDTO booking) {
+    public Response createBooking(CreateHotelBookingDTO booking) {
         LOGGER.info("Iniciando creacion de reserva: {}", booking);
         boolean success = this.bookingService.createBookingAsync(booking);
 

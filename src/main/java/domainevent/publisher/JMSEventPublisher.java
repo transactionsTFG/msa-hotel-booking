@@ -31,8 +31,8 @@ public class JMSEventPublisher implements IJMSEventPublisher {
             Event sendMsg = new Event(eventId, data);
             final String msg = this.gson.toJson(sendMsg);
             TextMessage txt = jmsContext.createTextMessage(msg);
-            txt.setStringProperty(PropertiesConsumer.ORIGIN_QUEUE, JMSQueueNames.AGENCY_ORCHESTATOR_QUEUE);
-            LOGGER.info("Publicando en Cola {}, Evento Id: {}, Mensaje: {}", JMSQueueNames.AGENCY_ORCHESTATOR_QUEUE,
+            txt.setStringProperty(PropertiesConsumer.ORIGIN_QUEUE, JMSQueueNames.HOTEL_ORCHESTRATOR_QUEUE);
+            LOGGER.info("Publicando en Cola {}, Evento Id: {}, Mensaje: {}", JMSQueueNames.HOTEL_ORCHESTRATOR_QUEUE,
                     eventId, msg);
             jmsContext.createProducer().send(this.orchestratorQueue, txt);
         } catch (Exception e) {

@@ -15,6 +15,6 @@ public class ResourceProducer {
     private ConnectionFactory connectionFactory;
 
     @Produces
-    @Resource(lookup = JMSQueueNames.AGENCY_ORCHESTATOR_QUEUE)
+    @Resource(lookup = JMSQueueNames.HOTEL_ORCHESTRATOR_QUEUE)
     private Queue orchestratorQueue;
 }

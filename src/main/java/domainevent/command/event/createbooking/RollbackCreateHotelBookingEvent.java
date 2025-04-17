@@ -11,14 +11,14 @@ import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;
 import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCommand;
-import msa.commons.microservices.hotelbooking.qualifier.RollbackCreateBookingEventQualifier;
+import msa.commons.microservices.hotelbooking.qualifier.RollbackCreateHotelBookingEventQualifier;
 import msa.commons.saga.SagaPhases;
 
 @Stateless
-@RollbackCreateBookingEventQualifier
+@RollbackCreateHotelBookingEventQualifier
 @Local(CommandHandler.class)
-public class RollbackCreateBookingEvent extends BaseHandler {
-    private static final Logger LOGGER = LogManager.getLogger(RollbackCreateBookingEvent.class);
+public class RollbackCreateHotelBookingEvent extends BaseHandler {
+    private static final Logger LOGGER = LogManager.getLogger(RollbackCreateHotelBookingEvent.class);
 
     @Override
     public void publishCommand(String json) {

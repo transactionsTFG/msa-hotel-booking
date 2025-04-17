@@ -2,11 +2,11 @@ package business.services;
 
 import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
-import business.dto.CreateBookingDTO;
+import business.dto.CreateHotelBookingDTO;
 
 public interface BookingService {
 
-    boolean createBookingAsync(CreateBookingDTO createBookingDTO);
+    boolean createBookingAsync(CreateHotelBookingDTO createBookingDTO);
 
     BookingDTO createBookingSync(BookingDTO bookingDTO);
 
@@ -15,4 +15,6 @@ public interface BookingService {
     boolean updateOnlyReservation(BookingDTO bookingDTO);
 
     boolean updateBooking(BookingWithLinesDTO booking);
+
+    boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO);
 }

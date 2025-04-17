@@ -10,9 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.booking.BookingDTO;
-import business.dto.CreateBookingDTO;
+import business.dto.CreateHotelBookingDTO;
 import business.saga.bookingcreation.mapper.BookingCreationMapper;
-import business.saga.bookingcreation.qualifier.BeginCreateBookingQualifier;
+import business.saga.bookingcreation.qualifier.BeginCreateHotelBookingQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;
@@ -21,14 +21,15 @@ import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCom
 import msa.commons.saga.SagaPhases;
 
 @Stateless
-@BeginCreateBookingQualifier
+@BeginCreateHotelBookingQualifier
 @Local(CommandHandler.class)
-public class BeginCreateBookingEvent extends BaseHandler {
-    private static final Logger LOGGER = LogManager.getLogger(BeginCreateBookingEvent.class);
+public class BeginCreateHotelBookingEvent extends BaseHandler {
+    private static final Logger LOGGER = LogManager.getLogger(BeginCreateHotelBookingEvent.class);
 
     @Override
     public void publishCommand(String json) {
-        CreateBookingDTO createBookingDTO = this.gson.fromJson(json, CreateBookingDTO.class);
+        LOGGER.info("JSON recibido: {}", json);
+        CreateHotelBookingDTO createBookingDTO = this.gson.fromJson(json, CreateHotelBookingDTO.class);
         final String sagaId = UUID.randomUUID().toString();
         BookingDTO bookingDTO = new BookingDTO();
         bookingDTO.setAvailable(false);
@@ -39,13 +40,12 @@ public class BeginCreateBookingEvent extends BaseHandler {
 
         LOGGER.info("***** INICIAMOS SAGA CREACION DE RESERVA {} *****", sagaId);
 
-        EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_CANCEL_HOTEL_BOOKING),
+        EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
                 CreateHotelBookingCommand.builder()
-                        .customerInfo(BookingCreationMapper.INSTANCE.dtoToCustomerInfo(createBookingDTO.getCustomer()))
-                        .roomsInfo(createBookingDTO.getRoomsInfo())
+                        .customerInfo(BookingCreationMapper.dtoToCustomerInfo(createBookingDTO.getCustomer()))
                         .build());
 
-        this.jmsCommandPublisher.publish(EventId.VALIDATE_HOTEL_CUSTOMER, eventData);
+        this.jmsCommandPublisher.publish(EventId.VALIDATE_HOTEL_CUSTOMER_BY_CREATE_HOTEL_BOOKING, eventData);
     }
 
 }
