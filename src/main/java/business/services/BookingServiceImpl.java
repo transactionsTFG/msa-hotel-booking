@@ -145,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
             bookingLine.setEndDate(bl.getEndDate());
             bookingLine.setAvailable(true);
 
-            double newTotalPrice = bl.getRoomDailyPrice() * bl.getRoomDailyPrice();
+            double newTotalPrice = bl.getRoomDailyPrice() * bl.getNumberOfNights();
             booking.setTotalPrice(booking.getTotalPrice() + newTotalPrice);
             this.entityManager.merge(bookingLine);
         });
