@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Version;
 
 import business.booking.Booking;
 import lombok.AllArgsConstructor;
@@ -23,15 +24,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "business.bookingLine.BookingLine.findByBookingIdAndRoomId", query = "SELECT b FROM BookingLine b WHERE b.booking.id = :bookingId AND b.roomId = :roomId"),
-    @NamedQuery(name = "business.bookingLine.BookingLine.findByRoomId", query = "SELECT b FROM BookingLine b WHERE b.roomId = :roomId"),
+        @NamedQuery(name = "business.bookingLine.BookingLine.findByBookingIdAndRoomId", query = "SELECT b FROM BookingLine b WHERE b.booking.id = :bookingId AND b.roomId = :roomId"),
+        @NamedQuery(name = "business.bookingLine.BookingLine.findByRoomId", query = "SELECT b FROM BookingLine b WHERE b.roomId = :roomId"),
 })
 public class BookingLine implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    
+
     private String roomId;
 
     @ManyToOne
@@ -48,4 +49,18 @@ public class BookingLine implements Serializable {
 
     @Column(columnDefinition = "boolean default true")
     private boolean available;
+
+    @Version
+    private int version;
+
+    public BookingLineDTO toDTO() {
+        return BookingLineDTO.builder()
+                .roomId(roomId)
+                .numberOfNights(numberOfNights)
+                .roomDailyPrice(roomDailyPrice)
+                .startDate(startDate)
+                .endDate(endDate)
+                .available(available)
+                .build();
+    }
 }

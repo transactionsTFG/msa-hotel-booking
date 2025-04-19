@@ -179,4 +179,22 @@ public class BookingServiceImpl implements BookingService {
         return true;
     }
 
+    @Override
+    public BookingWithLinesDTO getBookingWithLines(long bookingId) {
+
+        Booking booking = this.entityManager.find(Booking.class, bookingId, LockModeType.OPTIMISTIC);
+
+        if (booking == null)
+            return null;
+
+        return BookingWithLinesDTO.builder()
+                .bookingDTO(booking.toDTO())
+                .bookingLines(booking.getBookingLines().stream().map(bookingLine -> {
+                    this.entityManager.lock(bookingLine, LockModeType.OPTIMISTIC);
+                    return bookingLine.toDTO();
+                }).toList())
+                .build();
+
+    }
+
 }

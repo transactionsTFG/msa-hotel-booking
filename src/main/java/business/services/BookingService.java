@@ -17,4 +17,6 @@ public interface BookingService {
     boolean updateBooking(BookingWithLinesDTO booking);
 
     boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO);
+
+    BookingWithLinesDTO getBookingWithLines(long bookingId);
 }
