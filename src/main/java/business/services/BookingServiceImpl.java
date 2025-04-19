@@ -20,6 +20,7 @@ import business.booking.BookingWithLinesDTO;
 import business.bookingline.BookingLine;
 import business.bookingline.BookingLineDTO;
 import business.dto.CreateHotelBookingDTO;
+import business.dto.DeleteBookingLineDTO;
 import business.validators.DateValidator;
 import domainevent.registry.EventHandlerRegistry;
 import msa.commons.event.EventId;
@@ -214,9 +215,50 @@ public class BookingServiceImpl implements BookingService {
         moneyReturned = booking.getTotalPrice();
 
         booking.getBookingLines().forEach(bookingLine -> bookingLine.setAvailable(false));
+        booking.setTotalPrice(0);
         booking.setAvailable(false);
 
         return moneyReturned;
+    }
+
+    @Override
+    public double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+        double moneyReturned = 0;
+
+        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
+
+        if (booking == null) {
+            return -1;
+        }
+
+        if (!booking.isAvailable()) {
+            return -2;
+        }
+
+        TypedQuery<BookingLine> query = this.entityManager
+                .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+        query.setParameter("bookingId", deleteBookingLineDTO.getBookingId());
+        query.setParameter("roomId", deleteBookingLineDTO.getRoomId() + "");
+        BookingLine bookingLine = query.getResultList().isEmpty() ? null : query.getResultList().get(0);
+
+        if (bookingLine == null) {
+            return -3;
+        }
+
+        if (!bookingLine.isAvailable()) {
+            return -4;
+        }
+
+        bookingLine.setAvailable(false);
+        moneyReturned = (bookingLine.getRoomDailyPrice() * bookingLine.getNumberOfNights());
+        booking.setTotalPrice(booking.getTotalPrice() - moneyReturned);
+
+        if (booking.getTotalPrice() <= 0) {
+            booking.setAvailable(false);
+        }
+
+        return moneyReturned;
+
     }
 
 }

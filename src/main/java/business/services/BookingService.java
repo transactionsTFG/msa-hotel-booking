@@ -3,6 +3,7 @@ package business.services;
 import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
+import business.dto.DeleteBookingLineDTO;
 
 public interface BookingService {
 
@@ -21,4 +22,6 @@ public interface BookingService {
     BookingWithLinesDTO getBookingWithLines(long bookingId);
 
     double deleteBooking(long bookingId);
+
+    double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
 }

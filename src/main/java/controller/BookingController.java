@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
+import business.dto.DeleteBookingLineDTO;
 import business.services.BookingService;
 
 @Path("/bookings")
@@ -70,6 +71,30 @@ public class BookingController {
                     .entity(moneyReturned == 0 ? "Ha habido un error con la reserva " + bookingId
                             : (moneyReturned == -1 ? "No existe la reserva " + bookingId
                                     : "La reserva ya ha sido cancelada"))
+                    .build();
+
+        return Response.status(Response.Status.OK)
+                .entity("Dinero devuelto de la reserva: " + moneyReturned)
+                .build();
+
+    }
+
+    @POST
+    @Transactional
+    @Path("/deleteBookingLine")
+    public Response deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+        LOGGER.info("Cancelando línea de reserva  {}", deleteBookingLineDTO.toString());
+
+        double moneyReturned = this.bookingService.deleteBookingLine(deleteBookingLineDTO);
+
+        if (moneyReturned <= 0)
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(moneyReturned == 0
+                            ? "Ha habido un error con la reserva " + deleteBookingLineDTO.getBookingId()
+                            : (moneyReturned == -1 ? "No existe la reserva " + deleteBookingLineDTO.getBookingId()
+                                    : (moneyReturned == -2 ? "La reserva ya ha sido cancelada"
+                                            : (moneyReturned == -3 ? "La línea de reserva no existe"
+                                                    : "La línea de reserva ya ha sido cancelada"))))
                     .build();
 
         return Response.status(Response.Status.OK)
