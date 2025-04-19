@@ -168,7 +168,7 @@ public class BookingServiceImpl implements BookingService {
 
             for (BookingLine bookingLine : query.getResultList()) {
 
-                if (!DateValidator.validateDates(createHotelBookingDTO.getStartDate(),
+                if (bookingLine.isAvailable() && !DateValidator.validateDates(createHotelBookingDTO.getStartDate(),
                         createHotelBookingDTO.getEndDate(), bookingLine.getStartDate(), bookingLine.getEndDate())) {
                     return false;
                 }
