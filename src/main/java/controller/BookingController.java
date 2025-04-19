@@ -57,4 +57,25 @@ public class BookingController {
 
     }
 
+    @POST
+    @Transactional
+    @Path("/deleteBooking/{bookingId}")
+    public Response deleteBooking(@PathParam(value = "bookingId") long bookingId) {
+        LOGGER.info("Cancelando reserva con id {}", bookingId);
+
+        double moneyReturned = this.bookingService.deleteBooking(bookingId);
+
+        if (moneyReturned <= 0)
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(moneyReturned == 0 ? "Ha habido un error con la reserva " + bookingId
+                            : (moneyReturned == -1 ? "No existe la reserva " + bookingId
+                                    : "La reserva ya ha sido cancelada"))
+                    .build();
+
+        return Response.status(Response.Status.OK)
+                .entity("Dinero devuelto de la reserva: " + moneyReturned)
+                .build();
+
+    }
+
 }

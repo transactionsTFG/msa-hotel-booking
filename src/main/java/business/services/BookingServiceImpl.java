@@ -197,4 +197,26 @@ public class BookingServiceImpl implements BookingService {
 
     }
 
+    @Override
+    public double deleteBooking(long bookingId) {
+        double moneyReturned = 0;
+
+        Booking booking = this.entityManager.find(Booking.class, bookingId);
+
+        if (booking == null) {
+            return -1;
+        }
+
+        if (!booking.isAvailable()) {
+            return -2;
+        }
+
+        moneyReturned = booking.getTotalPrice();
+
+        booking.getBookingLines().forEach(bookingLine -> bookingLine.setAvailable(false));
+        booking.setAvailable(false);
+
+        return moneyReturned;
+    }
+
 }

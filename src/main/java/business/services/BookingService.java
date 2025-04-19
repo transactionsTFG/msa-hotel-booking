@@ -19,4 +19,6 @@ public interface BookingService {
     boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO);
 
     BookingWithLinesDTO getBookingWithLines(long bookingId);
+
+    double deleteBooking(long bookingId);
 }
