@@ -279,17 +279,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+    public boolean beginDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
+
+        if (booking == null || !booking.isAvailable()) {
+            return false;
+        }
+
+        LOGGER.info("Publicando comando: {}", EventId.BEGIN_DELETE_HOTEL_BOOKINGLINE);
+
+        this.eventHandlerRegistry.getHandler(EventId.BEGIN_DELETE_HOTEL_BOOKINGLINE)
+                .publishCommand(this.gson.toJson(deleteBookingLineDTO));
+
+        return true;
+    }
+
+    @Override
+    public double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO, String sagaId) {
         double moneyReturned = 0;
 
         Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
 
         if (booking == null) {
             return -1;
-        }
-
-        if (!booking.isAvailable()) {
-            return -2;
         }
 
         TypedQuery<BookingLine> query = this.entityManager
@@ -302,20 +314,63 @@ public class BookingServiceImpl implements BookingService {
             return -3;
         }
 
-        if (!bookingLine.isAvailable()) {
-            return -4;
-        }
-
         bookingLine.setAvailable(false);
+        bookingLine.setSagaId(sagaId);
+        bookingLine.setStatusSaga(SagaPhases.STARTED);
         moneyReturned = (bookingLine.getRoomDailyPrice() * bookingLine.getNumberOfNights());
-        booking.setTotalPrice(booking.getTotalPrice() - moneyReturned);
-
-        if (booking.getTotalPrice() <= 0) {
-            booking.setAvailable(false);
-        }
 
         return moneyReturned;
 
+    }
+
+    @Override
+    public boolean rollbackDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
+
+        if (booking == null)
+            return false;
+
+        TypedQuery<BookingLine> query = this.entityManager
+                .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+        query.setParameter("bookingId", deleteBookingLineDTO.getBookingId());
+        query.setParameter("roomId", deleteBookingLineDTO.getRoomId() + "");
+        BookingLine bookingLine = query.getResultList().isEmpty() ? null : query.getResultList().get(0);
+
+        bookingLine.setAvailable(true);
+        bookingLine.setStatusSaga(SagaPhases.CANCELLED);
+
+        booking.setAvailable(true);
+        booking.setStatusSaga(SagaPhases.CANCELLED);
+
+        return true;
+    }
+
+    @Override
+    public boolean commitDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
+        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
+
+        if (booking == null)
+            return false;
+
+        TypedQuery<BookingLine> query = this.entityManager
+                .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+        query.setParameter("bookingId", deleteBookingLineDTO.getBookingId());
+        query.setParameter("roomId", deleteBookingLineDTO.getRoomId() + "");
+        BookingLine bookingLine = query.getResultList().isEmpty() ? null : query.getResultList().get(0);
+
+        bookingLine.setAvailable(false);
+        bookingLine.setStatusSaga(SagaPhases.COMPLETED);
+
+        booking.setStatusSaga(SagaPhases.COMPLETED);
+        booking.setTotalPrice(
+                booking.getTotalPrice() - (bookingLine.getNumberOfNights() * bookingLine.getRoomDailyPrice()));
+
+        if (booking.getTotalPrice() <= 0) {
+            booking.setAvailable(false);
+            booking.setTotalPrice(0);
+        }
+
+        return true;
     }
 
     @Override

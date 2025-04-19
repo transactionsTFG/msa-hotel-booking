@@ -92,22 +92,16 @@ public class BookingController {
     @Transactional
     @Path("/deleteBookingLine")
     public Response deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
-        LOGGER.info("Cancelando línea de reserva  {}", deleteBookingLineDTO.toString());
+        LOGGER.info("Cancelando linea de reserva {}", deleteBookingLineDTO.toString());
 
-        double moneyReturned = this.bookingService.deleteBookingLine(deleteBookingLineDTO);
+        boolean success = this.bookingService.beginDeleteBookingLine(deleteBookingLineDTO);
 
-        if (moneyReturned <= 0)
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(moneyReturned == 0
-                            ? "Ha habido un error con la reserva " + deleteBookingLineDTO.getBookingId()
-                            : (moneyReturned == -1 ? "No existe la reserva " + deleteBookingLineDTO.getBookingId()
-                                    : (moneyReturned == -2 ? "La reserva ya ha sido cancelada"
-                                            : (moneyReturned == -3 ? "La línea de reserva no existe"
-                                                    : "La línea de reserva ya ha sido cancelada"))))
+        if (success)
+            return Response.status(Response.Status.OK).entity("La cancelacion de la linea de reserva se ha inicado")
                     .build();
 
-        return Response.status(Response.Status.OK)
-                .entity("Dinero devuelto de la reserva: " + moneyReturned)
+        return Response.status(Response.Status.NOT_ACCEPTABLE)
+                .entity("La linea de reserva no existe o ya ha sido cancelada")
                 .build();
 
     }

@@ -30,7 +30,13 @@ public interface BookingService {
 
     boolean commitDeleteBooking(long bookingId);
 
-    double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
+    boolean beginDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
+
+    double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO, String sagaId);
+
+    boolean rollbackDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
+
+    boolean commitDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
 
     boolean beginModifyBooking(UpdateBookingDTO updateBookingDTO);
 }

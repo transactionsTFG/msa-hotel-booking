@@ -32,7 +32,6 @@ public class BeginDeleteHotelBookingEvent extends BaseHandler {
 
         double moneyReturned = this.bookingService.deleteBooking(bookingId, sagaId);
 
-        LOGGER.info("dinero devuelto de la reserva: {}", moneyReturned);
 
         EventData eventData = new EventData(sagaId, Arrays.asList(), bookingId);
 
