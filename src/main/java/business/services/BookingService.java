@@ -4,6 +4,7 @@ import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
+import business.dto.UpdateBookingDTO;
 
 public interface BookingService {
 
@@ -21,7 +22,15 @@ public interface BookingService {
 
     BookingWithLinesDTO getBookingWithLines(long bookingId);
 
-    double deleteBooking(long bookingId);
+    boolean beginDeleteBooking(long bookingId);
+
+    double deleteBooking(long bookingId, String sagaId);
+
+    boolean rollbackDeleteBooking(long bookingId);
+
+    boolean commitDeleteBooking(long bookingId);
 
     double deleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
+
+    boolean beginModifyBooking(UpdateBookingDTO updateBookingDTO);
 }

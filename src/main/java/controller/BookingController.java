@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
+import business.dto.UpdateBookingDTO;
 import business.services.BookingService;
 
 @Path("/bookings")
@@ -59,22 +60,30 @@ public class BookingController {
     }
 
     @POST
+    @Path("/updateBooking")
+    @Transactional
+    public Response updateBooking(UpdateBookingDTO updateBookingDTO) {
+        LOGGER.info("Modificanda la reserva {}", updateBookingDTO.getId());
+        boolean success = this.bookingService.beginModifyBooking(updateBookingDTO);
+
+        if (success)
+            return Response.status(Response.Status.CREATED).entity("La creacion de la reserva se ha inicado").build();
+
+        return Response.status(Response.Status.NOT_ACCEPTABLE).entity("No se cumplen las reglas de negocio").build();
+    }
+
+    @POST
     @Transactional
     @Path("/deleteBooking/{bookingId}")
     public Response deleteBooking(@PathParam(value = "bookingId") long bookingId) {
         LOGGER.info("Cancelando reserva con id {}", bookingId);
 
-        double moneyReturned = this.bookingService.deleteBooking(bookingId);
+        boolean success = this.bookingService.beginDeleteBooking(bookingId);
 
-        if (moneyReturned <= 0)
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(moneyReturned == 0 ? "Ha habido un error con la reserva " + bookingId
-                            : (moneyReturned == -1 ? "No existe la reserva " + bookingId
-                                    : "La reserva ya ha sido cancelada"))
-                    .build();
+        if (success)
+            return Response.status(Response.Status.OK).entity("La cancelacion de la reserva se ha inicado").build();
 
-        return Response.status(Response.Status.OK)
-                .entity("Dinero devuelto de la reserva: " + moneyReturned)
+        return Response.status(Response.Status.NOT_ACCEPTABLE).entity("La reserva no existe o ya ha sido cancelada")
                 .build();
 
     }

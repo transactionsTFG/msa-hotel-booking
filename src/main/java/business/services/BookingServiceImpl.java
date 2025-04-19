@@ -21,10 +21,12 @@ import business.bookingline.BookingLine;
 import business.bookingline.BookingLineDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
+import business.dto.UpdateBookingDTO;
 import business.validators.DateValidator;
 import domainevent.registry.EventHandlerRegistry;
 import msa.commons.event.EventId;
 import msa.commons.microservices.hotelroom.commandevent.model.RoomInfo;
+import msa.commons.saga.SagaPhases;
 import validator.CustomerSyntaxValidator;
 
 @Stateless
@@ -145,6 +147,8 @@ public class BookingServiceImpl implements BookingService {
             bookingLine.setStartDate(bl.getStartDate());
             bookingLine.setEndDate(bl.getEndDate());
             bookingLine.setAvailable(true);
+            bookingLine.setStatusSaga(SagaPhases.COMPLETED);
+            bookingLine.setSagaId(booking.getSagaId());
 
             double newTotalPrice = bl.getRoomDailyPrice() * bl.getNumberOfNights();
             booking.setTotalPrice(booking.getTotalPrice() + newTotalPrice);
@@ -199,8 +203,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public double deleteBooking(long bookingId) {
-        double moneyReturned = 0;
+    public boolean beginDeleteBooking(long bookingId) {
+
+        Booking booking = this.entityManager.find(Booking.class, bookingId);
+
+        if (booking == null || !booking.isAvailable()) {
+            return false;
+        }
+
+        LOGGER.info("Publicando comando: {}", EventId.BEGIN_DELETE_HOTEL_BOOKING);
+
+        booking.setAvailable(false);
+        this.eventHandlerRegistry.getHandler(EventId.BEGIN_DELETE_HOTEL_BOOKING)
+                .publishCommand(this.gson.toJson(bookingId));
+
+        return true;
+    }
+
+    @Override
+    public double deleteBooking(long bookingId, String sagaId) {
 
         Booking booking = this.entityManager.find(Booking.class, bookingId);
 
@@ -208,17 +229,53 @@ public class BookingServiceImpl implements BookingService {
             return -1;
         }
 
-        if (!booking.isAvailable()) {
-            return -2;
-        }
-
-        moneyReturned = booking.getTotalPrice();
-
-        booking.getBookingLines().forEach(bookingLine -> bookingLine.setAvailable(false));
-        booking.setTotalPrice(0);
+        booking.getBookingLines().forEach(bookingLine -> {
+            bookingLine.setStatusSaga(SagaPhases.STARTED);
+            bookingLine.setSagaId(sagaId);
+            bookingLine.setAvailable(false);
+        });
+        booking.setStatusSaga(SagaPhases.STARTED);
+        booking.setSagaId(sagaId);
         booking.setAvailable(false);
 
-        return moneyReturned;
+        return booking.getTotalPrice();
+    }
+
+    @Override
+    public boolean rollbackDeleteBooking(long bookingId) {
+        Booking booking = this.entityManager.find(Booking.class, bookingId);
+
+        if (booking == null)
+            return false;
+
+        booking.getBookingLines().forEach(bookingLine -> {
+            bookingLine.setStatusSaga(SagaPhases.CANCELLED);
+            bookingLine.setAvailable(true);
+        });
+
+        booking.setAvailable(true);
+        booking.setStatusSaga(SagaPhases.CANCELLED);
+
+        return true;
+    }
+
+    @Override
+    public boolean commitDeleteBooking(long bookingId) {
+        Booking booking = this.entityManager.find(Booking.class, bookingId);
+
+        if (booking == null)
+            return false;
+
+        booking.getBookingLines().forEach(bookingLine -> {
+            bookingLine.setStatusSaga(SagaPhases.COMPLETED);
+            bookingLine.setAvailable(false);
+        });
+
+        booking.setAvailable(false);
+        booking.setStatusSaga(SagaPhases.COMPLETED);
+        booking.setTotalPrice(0);
+
+        return true;
     }
 
     @Override
@@ -259,6 +316,12 @@ public class BookingServiceImpl implements BookingService {
 
         return moneyReturned;
 
+    }
+
+    @Override
+    public boolean beginModifyBooking(UpdateBookingDTO updateBookingDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'modifyBooking'");
     }
 
 }
