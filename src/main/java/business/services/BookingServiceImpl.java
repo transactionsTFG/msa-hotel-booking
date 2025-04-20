@@ -21,7 +21,7 @@ import business.bookingline.BookingLine;
 import business.bookingline.BookingLineDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
-import business.dto.UpdateBookingDTO;
+import business.dto.UpdateHotelBookingDTO;
 import business.validators.DateValidator;
 import domainevent.registry.EventHandlerRegistry;
 import msa.commons.event.EventId;
@@ -161,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO) {
+    public boolean checkRoomsAvailabilityByCreateHotelBooking(CreateHotelBookingDTO createHotelBookingDTO) {
 
         List<RoomInfo> rooms = createHotelBookingDTO.getRoomsInfo();
         if (rooms == null)
@@ -280,7 +280,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public boolean beginDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO) {
-        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId());
+        Booking booking = this.entityManager.find(Booking.class, deleteBookingLineDTO.getBookingId(),
+                LockModeType.OPTIMISTIC);
 
         if (booking == null || !booking.isAvailable()) {
             return false;
@@ -374,9 +375,128 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public boolean beginModifyBooking(UpdateBookingDTO updateBookingDTO) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'modifyBooking'");
+    public boolean beginModifyBooking(UpdateHotelBookingDTO updateBookingDTO) {
+        Booking booking = this.entityManager.find(Booking.class, updateBookingDTO.getBookingId(),
+                LockModeType.OPTIMISTIC);
+
+        LOGGER.info("Validando datos del cliente: {}", updateBookingDTO.getCustomer());
+        if (!this.customerSyntaxValidator.isValid(updateBookingDTO.getCustomer())) {
+            return false;
+        }
+
+        if (booking == null || !booking.isAvailable()) {
+            return false;
+        }
+
+        LOGGER.info("Publicando comando: {}", EventId.BEGIN_UPDATE_HOTEL_BOOKING);
+
+        this.eventHandlerRegistry.getHandler(EventId.BEGIN_UPDATE_HOTEL_BOOKING)
+                .publishCommand(this.gson.toJson(updateBookingDTO));
+
+        return true;
+    }
+
+    @Override
+    public boolean modifyBooking(UpdateHotelBookingDTO updateBookingDTO) {
+        Booking booking = this.entityManager.find(Booking.class, updateBookingDTO.getBookingId());
+
+        if (booking == null) {
+            return false;
+        }
+
+        updateBookingDTO.getRoomsInfo().forEach(roomInfo -> {
+            TypedQuery<BookingLine> query = this.entityManager
+                    .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+            query.setParameter("bookingId", updateBookingDTO.getBookingId());
+            query.setParameter("roomId", roomInfo.getRoomId());
+            BookingLine bookingLine = query.getResultList().isEmpty() ? null : query.getResultList().get(0);
+
+            if (bookingLine == null) {
+                bookingLine = new BookingLine();
+                bookingLine.setRoomId(roomInfo.getRoomId());
+                bookingLine.setRoomDailyPrice(roomInfo.getDailyPrice());
+            }
+            bookingLine.setNumberOfNights(updateBookingDTO.getNumberOfNights());
+            bookingLine.setStartDate(updateBookingDTO.getStartDate());
+            bookingLine.setEndDate(updateBookingDTO.getEndDate());
+            bookingLine.setAvailable(true);
+            bookingLine.setSagaId(updateBookingDTO.getSagaId());
+            bookingLine.setStatusSaga(SagaPhases.STARTED);
+
+            this.entityManager.merge(bookingLine);
+
+        });
+        booking.setSagaId(updateBookingDTO.getSagaId());
+        booking.setStatusSaga(SagaPhases.STARTED);
+
+        return true;
+    }
+
+    @Override
+    public boolean commitModifyBooking(UpdateHotelBookingDTO updateBookingDTO) {
+        Booking booking = this.entityManager.find(Booking.class, updateBookingDTO.getBookingId());
+
+        if (booking == null) {
+            return false;
+        }
+
+        booking.setTotalPrice(0);
+        booking.getBookingLines().forEach(bookingLine -> {
+            booking.setTotalPrice(
+                    booking.getTotalPrice() + (bookingLine.getRoomDailyPrice() * bookingLine.getNumberOfNights()));
+            bookingLine.setStatusSaga(SagaPhases.COMPLETED);
+        });
+
+        booking.setStatusSaga(SagaPhases.COMPLETED);
+
+        return true;
+    }
+
+    @Override
+    public boolean rollbackModifyBooking(UpdateHotelBookingDTO updateBookingDTO) {
+        Booking booking = this.entityManager.find(Booking.class, updateBookingDTO.getBookingId());
+
+        if (booking == null) {
+            return false;
+        }
+
+        booking.getBookingLines().forEach(bookingLine -> {
+            bookingLine.setStatusSaga(SagaPhases.CANCELLED);
+        });
+
+        booking.setStatusSaga(SagaPhases.CANCELLED);
+
+        return true;
+    }
+
+    @Override
+    public boolean checkRoomsAvailabilityByUpdateHotelBooking(UpdateHotelBookingDTO updateHotelBookingDTO) {
+
+        List<RoomInfo> rooms = updateHotelBookingDTO.getRoomsInfo();
+        if (rooms == null)
+            return false;
+
+        for (RoomInfo roomInfo : rooms) {
+            TypedQuery<BookingLine> existingBookingLinesQuery = this.entityManager
+                    .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+            existingBookingLinesQuery.setParameter("bookingId", updateHotelBookingDTO.getBookingId());
+            existingBookingLinesQuery.setParameter("roomId", roomInfo.getRoomId());
+
+            List<BookingLine> existingBookingLines = existingBookingLinesQuery.getResultList();
+
+            for (BookingLine bookingLine : existingBookingLines) {
+                if ((bookingLine.getBooking().getId() != updateHotelBookingDTO.getBookingId()
+                        || !bookingLine.getRoomId().equals(roomInfo.getRoomId())) &&
+                        !DateValidator.validateDates(updateHotelBookingDTO.getStartDate(),
+                                updateHotelBookingDTO.getEndDate(), bookingLine.getStartDate(),
+                                bookingLine.getEndDate())) {
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
     }
 
 }

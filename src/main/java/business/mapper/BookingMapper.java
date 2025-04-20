@@ -1,21 +1,26 @@
-// package business.mapper;
+package business.mapper;
 
-// import org.mapstruct.Mapper;
-// import org.mapstruct.Mapping;
-// import org.mapstruct.factory.Mappers;
-
-// import business.booking.Booking;
-// import business.booking.BookingDTO;
-// import msa.commons.saga.SagaPhases;
+import business.dto.CustomerDTO;
+import msa.commons.microservices.reservationairline.commandevent.model.CustomerInfo;
 
 // @Mapper
-// public interface BookingMapper {
-//     BookingMapper INSTANCE = Mappers.getMapper(BookingMapper.class);
+public interface BookingMapper {
 
-//     @Mapping(target = "customerDTO", ignore = true)
-//     BookingDTO entityToDTO(Booking booking);
-    
-//     @Mapping(target = "bookingLines", ignore = true)
-//     @Mapping(target = "version", ignore = true)
-//     Booking createBookingDTOToEntity(BookingDTO createBookingDTO, SagaPhases status);
-// }
+    // BookingCreationMapper INSTANCE = Mappers.getMapper(BookingCreationMapper.class);
+
+    static CustomerInfo dtoToCustomerInfo(CustomerDTO customerDTO) {
+
+        if (customerDTO == null)
+            return null;
+
+        CustomerInfo customerInfo = new CustomerInfo();
+
+        customerInfo.setDni(customerDTO.getDni());
+        customerInfo.setEmail(customerDTO.getEmail());
+        customerInfo.setName(customerDTO.getName());
+        customerInfo.setPhone(customerDTO.getPhone());
+
+        return customerInfo;
+    }
+
+}

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.dto.DeleteBookingLineDTO;
-import business.saga.bookingcreation.qualifier.BeginDeleteHotelBookingLineQualifier;
+import business.saga.bookingdeletion.qualifier.BeginDeleteHotelBookingLineQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;

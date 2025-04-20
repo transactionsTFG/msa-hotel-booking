@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
-import business.dto.UpdateBookingDTO;
+import business.dto.UpdateHotelBookingDTO;
 import business.services.BookingService;
 
 @Path("/bookings")
@@ -62,12 +62,13 @@ public class BookingController {
     @POST
     @Path("/updateBooking")
     @Transactional
-    public Response updateBooking(UpdateBookingDTO updateBookingDTO) {
-        LOGGER.info("Modificanda la reserva {}", updateBookingDTO.getId());
+    public Response updateBooking(UpdateHotelBookingDTO updateBookingDTO) {
+        LOGGER.info("Modificando la reserva {}", updateBookingDTO.getBookingId());
         boolean success = this.bookingService.beginModifyBooking(updateBookingDTO);
 
         if (success)
-            return Response.status(Response.Status.CREATED).entity("La creacion de la reserva se ha inicado").build();
+            return Response.status(Response.Status.CREATED).entity("La actualizacion de la reserva se ha inicado")
+                    .build();
 
         return Response.status(Response.Status.NOT_ACCEPTABLE).entity("No se cumplen las reglas de negocio").build();
     }

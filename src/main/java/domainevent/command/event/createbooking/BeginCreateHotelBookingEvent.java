@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import business.booking.BookingDTO;
 import business.dto.CreateHotelBookingDTO;
-import business.saga.bookingcreation.mapper.BookingCreationMapper;
+import business.mapper.BookingMapper;
 import business.saga.bookingcreation.qualifier.BeginCreateHotelBookingQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
@@ -52,7 +52,7 @@ public class BeginCreateHotelBookingEvent extends BaseHandler {
                         .peopleNumber(createBookingDTO.getPeopleNumber())
                         .customerDNI(createBookingDTO.getCustomerDNI())
                         .roomsInfo(createBookingDTO.getRoomsInfo())
-                        .customerInfo(BookingCreationMapper.dtoToCustomerInfo(createBookingDTO.getCustomer()))
+                        .customerInfo(BookingMapper.dtoToCustomerInfo(createBookingDTO.getCustomer()))
                         .build());
 
         this.jmsCommandPublisher.publish(EventId.VALIDATE_HOTEL_CUSTOMER_BY_CREATE_HOTEL_BOOKING, eventData);

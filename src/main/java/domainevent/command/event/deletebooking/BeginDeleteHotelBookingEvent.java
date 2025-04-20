@@ -9,7 +9,7 @@ import javax.ejb.Stateless;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import business.saga.bookingcreation.qualifier.BeginDeleteHotelBookingQualifier;
+import business.saga.bookingdeletion.qualifier.BeginDeleteHotelBookingQualifier;
 import domainevent.command.event.createbooking.BeginCreateHotelBookingEvent;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;

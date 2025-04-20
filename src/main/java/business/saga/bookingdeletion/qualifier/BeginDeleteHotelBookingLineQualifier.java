@@ -1,4 +1,4 @@
-package business.saga.bookingcreation.qualifier;
+package business.saga.bookingdeletion.qualifier;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

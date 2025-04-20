@@ -4,7 +4,7 @@ import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
 import business.dto.DeleteBookingLineDTO;
-import business.dto.UpdateBookingDTO;
+import business.dto.UpdateHotelBookingDTO;
 
 public interface BookingService {
 
@@ -18,7 +18,7 @@ public interface BookingService {
 
     boolean updateBooking(BookingWithLinesDTO booking);
 
-    boolean checkRoomsAvailability(CreateHotelBookingDTO createHotelBookingDTO);
+    boolean checkRoomsAvailabilityByCreateHotelBooking(CreateHotelBookingDTO createHotelBookingDTO);
 
     BookingWithLinesDTO getBookingWithLines(long bookingId);
 
@@ -38,5 +38,13 @@ public interface BookingService {
 
     boolean commitDeleteBookingLine(DeleteBookingLineDTO deleteBookingLineDTO);
 
-    boolean beginModifyBooking(UpdateBookingDTO updateBookingDTO);
+    boolean beginModifyBooking(UpdateHotelBookingDTO updateBookingDTO);
+
+    boolean modifyBooking(UpdateHotelBookingDTO updateBookingDTO);
+
+    boolean commitModifyBooking(UpdateHotelBookingDTO updateBookingDTO);
+
+    boolean rollbackModifyBooking(UpdateHotelBookingDTO updateBookingDTO);
+
+    boolean checkRoomsAvailabilityByUpdateHotelBooking(UpdateHotelBookingDTO updateHotelBookingDTO);
 }

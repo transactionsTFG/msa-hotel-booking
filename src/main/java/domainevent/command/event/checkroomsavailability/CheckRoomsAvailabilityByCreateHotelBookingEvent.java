@@ -36,7 +36,7 @@ public class CheckRoomsAvailabilityByCreateHotelBookingEvent extends BaseHandler
                 .endDate(command.getEndDate())
                 .build();
 
-        boolean areRoomsAvailable = this.bookingService.checkRoomsAvailability(createHotelBookingDTO);
+        boolean areRoomsAvailable = this.bookingService.checkRoomsAvailabilityByCreateHotelBooking(createHotelBookingDTO);
 
         EventData eventData = new EventData(data.getSagaId(),
                 Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
