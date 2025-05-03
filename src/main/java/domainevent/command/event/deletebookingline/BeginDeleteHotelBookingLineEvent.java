@@ -13,9 +13,9 @@ import business.dto.DeleteBookingLineDTO;
 import business.saga.bookingdeletion.qualifier.BeginDeleteHotelBookingLineQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.DeleteHotelBookingLineCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelbooking.commandevent.DeleteHotelBookingLineCommand;
 
 @Stateless
 @BeginDeleteHotelBookingLineQualifier

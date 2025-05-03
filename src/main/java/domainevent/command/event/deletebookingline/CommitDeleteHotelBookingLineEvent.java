@@ -7,11 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.dto.DeleteBookingLineDTO;
+import business.qualifier.CommitDeleteHotelBookingLineEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.DeleteHotelBookingLineCommand;
 import msa.commons.event.EventData;
-import msa.commons.microservices.hotelbooking.commandevent.DeleteHotelBookingLineCommand;
-import msa.commons.microservices.hotelbooking.qualifier.CommitDeleteHotelBookingLineEventQualifier;
 
 @Stateless
 @CommitDeleteHotelBookingLineEventQualifier

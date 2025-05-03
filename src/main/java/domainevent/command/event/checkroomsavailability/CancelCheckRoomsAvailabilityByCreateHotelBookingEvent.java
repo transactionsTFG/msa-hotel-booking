@@ -6,9 +6,9 @@ import javax.ejb.Stateless;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import business.qualifier.CancelCheckRoomsAvailabilityByCreateHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
-import msa.commons.microservices.hotelbooking.qualifier.CancelCheckRoomsAvailabilityByCreateHotelBookingEventQualifier;
 
 @Stateless
 @CancelCheckRoomsAvailabilityByCreateHotelBookingEventQualifier

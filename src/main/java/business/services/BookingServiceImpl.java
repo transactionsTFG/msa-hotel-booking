@@ -24,8 +24,8 @@ import business.dto.DeleteBookingLineDTO;
 import business.dto.UpdateHotelBookingDTO;
 import business.validators.DateValidator;
 import domainevent.registry.EventHandlerRegistry;
+import msa.commons.commands.hotelroom.model.RoomInfo;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelroom.commandevent.model.RoomInfo;
 import msa.commons.saga.SagaPhases;
 import validator.CustomerSyntaxValidator;
 

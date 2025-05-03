@@ -1,7 +1,7 @@
 package business.mapper;
 
 import business.dto.CustomerDTO;
-import msa.commons.microservices.reservationairline.commandevent.model.CustomerInfo;
+import msa.commons.commands.createreservation.model.CustomerInfo;
 
 // @Mapper
 public interface BookingMapper {

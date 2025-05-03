@@ -12,12 +12,12 @@ import org.apache.logging.log4j.Logger;
 import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.bookingline.BookingLineDTO;
+import business.qualifier.CommitCreateHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.CreateHotelBookingCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCommand;
-import msa.commons.microservices.hotelbooking.qualifier.CommitCreateHotelBookingEventQualifier;
 import msa.commons.saga.SagaPhases;
 
 @Stateless

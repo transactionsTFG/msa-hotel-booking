@@ -6,10 +6,10 @@ import javax.ejb.Stateless;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import business.qualifier.CommitDeleteHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;
-import msa.commons.microservices.hotelbooking.qualifier.CommitDeleteHotelBookingEventQualifier;
 
 @Stateless
 @CommitDeleteHotelBookingEventQualifier

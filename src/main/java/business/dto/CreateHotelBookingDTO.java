@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import msa.commons.microservices.hotelroom.commandevent.model.RoomInfo;
+import msa.commons.commands.hotelroom.model.RoomInfo;
 
 @Data
 @Builder

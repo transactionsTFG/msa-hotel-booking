@@ -10,11 +10,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.booking.BookingWithLinesDTO;
+import business.qualifier.GetHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelbooking.qualifier.GetHotelBookingEventQualifier;
 
 @Stateless
 @GetHotelBookingEventQualifier

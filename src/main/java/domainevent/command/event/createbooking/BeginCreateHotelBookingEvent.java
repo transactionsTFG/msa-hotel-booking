@@ -15,9 +15,9 @@ import business.mapper.BookingMapper;
 import business.saga.bookingcreation.qualifier.BeginCreateHotelBookingQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.CreateHotelBookingCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCommand;
 import msa.commons.saga.SagaPhases;
 
 @Stateless

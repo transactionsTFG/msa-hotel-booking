@@ -9,12 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.dto.UpdateHotelBookingDTO;
+import business.qualifier.CheckRoomsAvailabilityByUpdateHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.UpdateHotelBookingCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.microservices.hotelbooking.commandevent.UpdateHotelBookingCommand;
-import msa.commons.microservices.hotelbooking.qualifier.CheckRoomsAvailabilityByUpdateHotelBookingEventQualifier;
 
 @Stateless
 @CheckRoomsAvailabilityByUpdateHotelBookingEventQualifier

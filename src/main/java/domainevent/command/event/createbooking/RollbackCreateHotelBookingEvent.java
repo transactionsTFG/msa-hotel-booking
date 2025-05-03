@@ -7,11 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.booking.BookingDTO;
+import business.qualifier.RollbackCreateHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.hotelbooking.CreateHotelBookingCommand;
 import msa.commons.event.EventData;
-import msa.commons.microservices.hotelbooking.commandevent.CreateHotelBookingCommand;
-import msa.commons.microservices.hotelbooking.qualifier.RollbackCreateHotelBookingEventQualifier;
 import msa.commons.saga.SagaPhases;
 
 @Stateless
