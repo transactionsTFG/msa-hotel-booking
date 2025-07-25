@@ -56,7 +56,7 @@ public class EventHandlerRegistry {
 
     @PostConstruct
     public void init() {
-        this.handlers.put(EventId.BEGIN_CREATE_HOTEL_BOOKING, beginCreateHotelBookingEvent);
+        this.handlers.put(EventId.CREATE_RESERVATION_TRAVEL, beginCreateHotelBookingEvent);
         this.handlers.put(EventId.COMMIT_CREATE_HOTEL_BOOKING, commitCreateHotelBookingEvent);
         this.handlers.put(EventId.ROLLBACK_CREATE_HOTEL_BOOKING, rollbackCreateHotelBookingEvent);
         this.handlers.put(EventId.CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,

@@ -12,6 +12,8 @@ import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.commands.hotelbooking.CreateHotelBookingCommand;
 import msa.commons.event.EventData;
+import msa.commons.event.EventId;
+import msa.commons.event.eventoperation.reservation.CreateReservation;
 import msa.commons.saga.SagaPhases;
 
 @Stateless
@@ -34,6 +36,9 @@ public class RollbackCreateHotelBookingEvent extends BaseHandler {
                 .available(false)
                 .build();
         this.bookingService.updateOnlyReservation(bookingDTO);
+        eventData.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_COMMIT);
+        eventData.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
+        this.jmsCommandPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** ROLLBACK TERMINADO CON EXITO EN SAGA CREACION DE RESERVA *****");
     }
 
