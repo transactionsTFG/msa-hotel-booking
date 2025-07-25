@@ -29,31 +29,23 @@ public class BeginCreateHotelBookingEvent extends BaseHandler {
     @Override
     public void publishCommand(String json) {
         LOGGER.info("JSON recibido: {}", json);
-        CreateHotelBookingDTO createBookingDTO = this.gson.fromJson(json, CreateHotelBookingDTO.class);
-        final String sagaId = UUID.randomUUID().toString();
+        EventData e = EventData.fromJson(json, CreateHotelBookingCommand.class);
+        CreateHotelBookingCommand command = (CreateHotelBookingCommand) e.getData();
         BookingDTO bookingDTO = new BookingDTO();
         bookingDTO.setAvailable(false);
         bookingDTO.setUserId("-1");
         bookingDTO.setStatusSaga(SagaPhases.STARTED);
-        bookingDTO.setSagaId(sagaId);
-        bookingDTO = this.bookingService.createBookingSync(bookingDTO);
+        bookingDTO.setSagaId(e.getSagaId());
+        this.bookingService.createBookingSync(bookingDTO);
 
-        LOGGER.info("***** INICIAMOS SAGA CREACION DE RESERVA {} *****", sagaId);
+        LOGGER.info("***** INICIAMOS SAGA CREACION DE RESERVA {} *****", e.getSagaId());
 
-        EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
-                CreateHotelBookingCommand.builder()
-                        .sagaId(sagaId)
-                        .bookingId(bookingDTO.getId())
-                        .userId(Long.parseLong(createBookingDTO.getUserId()))
-                        .startDate(createBookingDTO.getStartDate())
-                        .endDate(createBookingDTO.getEndDate())
-                        .numberOfNights(createBookingDTO.getNumberOfNights())
-                        .withBreakfast(createBookingDTO.getWithBreakfast())
-                        .peopleNumber(createBookingDTO.getPeopleNumber())
-                        .customerDNI(createBookingDTO.getCustomerDNI())
-                        .roomsInfo(createBookingDTO.getRoomsInfo())
-                        .customerInfo(BookingMapper.dtoToCustomerInfo(createBookingDTO.getCustomer()))
-                        .build());
+        EventData eventData = new EventData(    e.getSagaId(),
+                                                e.getOperation(), 
+                                                Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
+                                                command,
+                                                e.getTransactionActive()
+                                            );
 
         this.jmsCommandPublisher.publish(EventId.VALIDATE_HOTEL_CUSTOMER_BY_CREATE_HOTEL_BOOKING, eventData);
     }
