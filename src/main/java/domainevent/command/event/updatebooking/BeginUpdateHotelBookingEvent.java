@@ -29,26 +29,9 @@ public class BeginUpdateHotelBookingEvent extends BaseHandler {
     public void publishCommand(String json) {
         LOGGER.info("JSON recibido: {}", json);
 
-        UpdateHotelBookingDTO updateBookingDTO = this.gson.fromJson(json, UpdateHotelBookingDTO.class);
-        final String sagaId = UUID.randomUUID().toString();
+        EventData eventData = EventData.fromJson(json, UpdateHotelBookingCommand.class);
 
-        LOGGER.info("***** INICIANDO SAGA MODIFICACION DE RESERVA {} *****", sagaId);
-
-        EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_UPDATE_HOTEL_BOOKING),
-                UpdateHotelBookingCommand.builder()
-                        .sagaId(sagaId)
-                        .bookingId(updateBookingDTO.getBookingId())
-                        .userId(Long.parseLong(updateBookingDTO.getUserId()))
-                        .startDate(updateBookingDTO.getStartDate())
-                        .endDate(updateBookingDTO.getEndDate())
-                        .numberOfNights(updateBookingDTO.getNumberOfNights())
-                        .withBreakfast(updateBookingDTO.getWithBreakfast())
-                        .peopleNumber(updateBookingDTO.getPeopleNumber())
-                        .customerDNI(updateBookingDTO.getCustomerDNI())
-                        .roomsInfo(updateBookingDTO.getRoomsInfo())
-                        .customerInfo(
-                                BookingMapper.dtoToCustomerInfo(updateBookingDTO.getCustomer()))
-                        .build());
+        LOGGER.info("***** INICIANDO SAGA MODIFICACION DE RESERVA {} *****", eventData.getSagaId());
 
         this.jmsCommandPublisher.publish(EventId.VALIDATE_HOTEL_CUSTOMER_BY_UPDATE_HOTEL_BOOKING, eventData);
 

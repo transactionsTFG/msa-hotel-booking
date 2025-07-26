@@ -12,6 +12,8 @@ import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.commands.hotelbooking.UpdateHotelBookingCommand;
 import msa.commons.event.EventData;
+import msa.commons.event.EventId;
+import msa.commons.event.eventoperation.reservation.UpdateReservation;
 
 @Stateless
 @CommitUpdateHotelBookingEventQualifier
@@ -39,6 +41,8 @@ public class CommitUpdateHotelBookingEvent extends BaseHandler {
                 .build();
 
         this.bookingService.commitModifyBooking(updateHotelBookingDTO);
+        eventData.setOperation(UpdateReservation.UPDATE_RESERVATION_ONLY_HOTEL_COMMIT);
+        this.jmsCommandPublisher.publish(EventId.UPDATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** COMMIT TERMINADO CON EXITO EN SAGA MODIFICACION DE RESERVA *****");
 
     }
