@@ -35,8 +35,7 @@ public class CommitCreateHotelBookingEvent extends BaseHandler {
         CreateHotelBookingCommand command = (CreateHotelBookingCommand) eventData.getData();
 
         if (!this.bookingService.validateSagaId(command.getBookingId(), eventData.getSagaId())) {
-            this.jmsCommandPublisher.publish(EventId.ROLLBACK_CREATE_HOTEL_BOOKING, new EventData(eventData.getSagaId(),
-                    Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING), eventData));
+            this.jmsCommandPublisher.publish(EventId.ROLLBACK_CREATE_HOTEL_BOOKING, eventData);
         } else {
 
             BookingDTO bookingDTO = BookingDTO.builder()
