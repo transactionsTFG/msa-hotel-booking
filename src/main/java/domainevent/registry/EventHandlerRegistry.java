@@ -66,7 +66,8 @@ public class EventHandlerRegistry {
         this.handlers.put(EventId.CANCEL_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,
                 cancelCheckRoomsAvailabilityByCreateHotelBookingEvent);
         this.handlers.put(EventId.GET_HOTEL_BOOKING, getHotelBookingEvent);
-        this.handlers.put(EventId.BEGIN_DELETE_HOTEL_BOOKING, beginDeleteHotelBookingEvent);
+        
+        this.handlers.put(EventId.REMOVE_RESERVATION_TRAVEL, beginDeleteHotelBookingEvent);
         this.handlers.put(EventId.COMMIT_DELETE_HOTEL_BOOKING, commitDeleteHotelBookingEvent);
         this.handlers.put(EventId.ROLLBACK_DELETE_HOTEL_BOOKING, rollbackDeleteHotelBookingEvent);
         this.handlers.put(EventId.BEGIN_DELETE_HOTEL_BOOKINGLINE, beginDeleteHotelBookingLineEvent);

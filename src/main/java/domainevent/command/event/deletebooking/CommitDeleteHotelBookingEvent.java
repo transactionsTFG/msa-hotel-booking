@@ -9,7 +9,10 @@ import org.apache.logging.log4j.Logger;
 import business.qualifier.CommitDeleteHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.removereservation.RemoveBookingCommand;
 import msa.commons.event.EventData;
+import msa.commons.event.EventId;
+import msa.commons.event.eventoperation.reservation.DeleteReservation;
 
 @Stateless
 @CommitDeleteHotelBookingEventQualifier
@@ -24,11 +27,13 @@ public class CommitDeleteHotelBookingEvent extends BaseHandler {
         LOGGER.info("JSON recibido: {}", json);
 
         EventData eventData = EventData.fromJson(json, Long.class);
-        long bookingId = (Long) eventData.getData();
+        RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
-        boolean success = this.bookingService.commitDeleteBooking(bookingId);
+        boolean success = this.bookingService.commitDeleteBooking(c.getIdBooking());
 
         LOGGER.info("---- COMMIT CANCELAR TERMINADO " + (success ? "EXISTOSO" : "FALLIDO") + " ----");
+        eventData.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_COMMIT);
+        this.jmsCommandPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, eventData);
     }
 
 }

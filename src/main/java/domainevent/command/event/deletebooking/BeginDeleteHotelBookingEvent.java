@@ -13,6 +13,7 @@ import business.saga.bookingdeletion.qualifier.BeginDeleteHotelBookingQualifier;
 import domainevent.command.event.createbooking.BeginCreateHotelBookingEvent;
 import domainevent.command.handler.BaseHandler;
 import domainevent.command.handler.CommandHandler;
+import msa.commons.commands.removereservation.RemoveBookingCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
 
@@ -21,21 +22,18 @@ import msa.commons.event.EventId;
 @Local(CommandHandler.class)
 public class BeginDeleteHotelBookingEvent extends BaseHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger(BeginCreateHotelBookingEvent.class);
+    private static final Logger LOGGER = LogManager.getLogger(BeginDeleteHotelBookingEvent.class);
 
     @Override
     public void publishCommand(String json) {
         LOGGER.info("JSON recibido: {}", json);
 
-        long bookingId = this.gson.fromJson(json, Long.class);
-        final String sagaId = UUID.randomUUID().toString();
+        EventData eventData = EventData.fromJson(json, Long.class);
+        RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
-        double moneyReturned = this.bookingService.deleteBooking(bookingId, sagaId);
+        double moneyReturned = this.bookingService.deleteBooking(c.getIdBooking(), eventData.getSagaId());
 
-
-        EventData eventData = new EventData(sagaId, Arrays.asList(), bookingId);
-
-        LOGGER.info("***** INICIADA SAGA CANCELACION RESERVA ***** {}", sagaId);
+        LOGGER.info("***** INICIADA SAGA CANCELACION RESERVA ***** {}", eventData.getSagaId());
 
         if (moneyReturned <= 0) {
             this.jmsCommandPublisher.publish(EventId.ROLLBACK_DELETE_HOTEL_BOOKING, eventData);
