@@ -36,7 +36,6 @@ public class RollbackCreateHotelBookingEvent extends BaseHandler {
                 .available(false)
                 .build();
         this.bookingService.updateOnlyReservation(bookingDTO);
-        eventData.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_COMMIT);
         eventData.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
         this.jmsCommandPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** ROLLBACK TERMINADO CON EXITO EN SAGA CREACION DE RESERVA *****");

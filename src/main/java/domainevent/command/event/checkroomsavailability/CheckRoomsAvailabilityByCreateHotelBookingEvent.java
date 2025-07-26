@@ -38,16 +38,12 @@ public class CheckRoomsAvailabilityByCreateHotelBookingEvent extends BaseHandler
 
         boolean areRoomsAvailable = this.bookingService.checkRoomsAvailabilityByCreateHotelBooking(createHotelBookingDTO);
 
-        EventData eventData = new EventData(data.getSagaId(),
-                Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
-                command);
-
         if (areRoomsAvailable) {
             this.jmsCommandPublisher.publish(EventId.CONFIRM_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,
-                    eventData);
+                    data);
         } else {
             this.jmsCommandPublisher.publish(EventId.CANCEL_CHECK_ROOMS_AVAILABILITY_BY_CREATE_HOTEL_BOOKING,
-                    eventData);
+                    data);
         }
 
     }
