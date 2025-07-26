@@ -36,10 +36,10 @@ public class BeginCreateHotelBookingEvent extends BaseHandler {
         bookingDTO.setUserId("-1");
         bookingDTO.setStatusSaga(SagaPhases.STARTED);
         bookingDTO.setSagaId(e.getSagaId());
-        this.bookingService.createBookingSync(bookingDTO);
+        bookingDTO = this.bookingService.createBookingSync(bookingDTO);
 
         LOGGER.info("***** INICIAMOS SAGA CREACION DE RESERVA {} *****", e.getSagaId());
-
+        command.setBookingId(bookingDTO.getId());
         EventData eventData = new EventData(    e.getSagaId(),
                                                 e.getOperation(), 
                                                 Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
