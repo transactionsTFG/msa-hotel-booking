@@ -40,7 +40,7 @@ public class CommitCreateHotelBookingEvent extends BaseHandler {
 
             BookingDTO bookingDTO = BookingDTO.builder()
                     .id(command.getBookingId())
-                    .userId(command.getUserId() + "")
+                    .userId(command.getCustomerInfo().getIdCustomer() + "")
                     .statusSaga(SagaPhases.COMPLETED)
                     .available(true)
                     .build();
