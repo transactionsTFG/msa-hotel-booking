@@ -30,7 +30,7 @@ public class RollbackDeleteHotelBookingEvent extends BaseHandler {
         RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
         boolean success = this.bookingService.rollbackDeleteBooking(c.getIdBooking());
-        eventData.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
+        eventData.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
         this.jmsCommandPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("---- ROLLBACK CANCELAR RESERVA " + (success ? "EXISTOSO" : "FALLIDO") + " ----");
 

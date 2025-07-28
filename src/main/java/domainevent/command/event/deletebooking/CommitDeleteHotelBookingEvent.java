@@ -32,7 +32,7 @@ public class CommitDeleteHotelBookingEvent extends BaseHandler {
         boolean success = this.bookingService.commitDeleteBooking(c.getIdBooking());
 
         LOGGER.info("---- COMMIT CANCELAR TERMINADO " + (success ? "EXISTOSO" : "FALLIDO") + " ----");
-        eventData.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_COMMIT);
+        eventData.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_COMMIT);
         this.jmsCommandPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, eventData);
     }
 
