@@ -28,7 +28,7 @@ public class BeginDeleteHotelBookingEvent extends BaseHandler {
     public void publishCommand(String json) {
         LOGGER.info("JSON recibido: {}", json);
 
-        EventData eventData = EventData.fromJson(json, Long.class);
+        EventData eventData = EventData.fromJson(json, RemoveBookingCommand.class);
         RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
         double moneyReturned = this.bookingService.deleteBooking(c.getIdBooking(), eventData.getSagaId());

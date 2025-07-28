@@ -26,7 +26,7 @@ public class CommitDeleteHotelBookingEvent extends BaseHandler {
         LOGGER.info("---- COMMIT CANCELAR RESERVA INICIADO ----");
         LOGGER.info("JSON recibido: {}", json);
 
-        EventData eventData = EventData.fromJson(json, Long.class);
+        EventData eventData = EventData.fromJson(json, RemoveBookingCommand.class);
         RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
         boolean success = this.bookingService.commitDeleteBooking(c.getIdBooking());

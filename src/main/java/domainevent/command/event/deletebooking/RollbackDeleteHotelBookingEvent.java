@@ -26,7 +26,7 @@ public class RollbackDeleteHotelBookingEvent extends BaseHandler {
         LOGGER.info("---- ROLLBACK CANCELAR RESERVA INICIADO ----");
         LOGGER.info("JSON recibido: {}", json);
 
-        EventData eventData = EventData.fromJson(json, Long.class);
+        EventData eventData = EventData.fromJson(json, RemoveBookingCommand.class);
         RemoveBookingCommand c = (RemoveBookingCommand) eventData.getData();
 
         boolean success = this.bookingService.rollbackDeleteBooking(c.getIdBooking());
