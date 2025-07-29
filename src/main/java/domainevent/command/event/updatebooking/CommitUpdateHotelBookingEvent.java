@@ -6,6 +6,7 @@ import javax.ejb.Stateless;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import business.booking.BookingWithLinesDTO;
 import business.dto.UpdateHotelBookingDTO;
 import business.qualifier.CommitUpdateHotelBookingEventQualifier;
 import domainevent.command.handler.BaseHandler;
@@ -41,6 +42,11 @@ public class CommitUpdateHotelBookingEvent extends BaseHandler {
                 .build();
 
         this.bookingService.commitModifyBooking(updateHotelBookingDTO);
+        BookingWithLinesDTO bL = this.bookingService.getBookingWithLines(command.getBookingId());
+        double totalPrice = bL.getBookingLines().stream()
+                .mapToDouble(line -> line.getNumberOfNights() * line.getRoomDailyPrice())
+                .sum();
+        command.setTotalPrice(totalPrice);
         eventData.setOperation(UpdateReservation.UPDATE_RESERVATION_ONLY_HOTEL_COMMIT);
         this.jmsCommandPublisher.publish(EventId.UPDATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** COMMIT TERMINADO CON EXITO EN SAGA MODIFICACION DE RESERVA *****");
