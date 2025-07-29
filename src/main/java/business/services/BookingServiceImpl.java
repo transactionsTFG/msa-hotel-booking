@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.rsa.cryptoj.e.b;
 
 import business.booking.Booking;
 import business.booking.BookingDTO;
@@ -441,6 +442,21 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setTotalPrice(0);
+        updateBookingDTO.getRoomsInfo().forEach(roomInfo -> {
+            TypedQuery<BookingLine> query = this.entityManager
+                    .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
+            query.setParameter("bookingId", updateBookingDTO.getBookingId());
+            query.setParameter("roomId", roomInfo.getRoomId());
+            BookingLine bookingLine = query.getResultList().isEmpty() ? null : query.getResultList().get(0);
+            if (bookingLine != null) {
+                bookingLine.setNumberOfNights(updateBookingDTO.getNumberOfNights());
+                bookingLine.setStatusSaga(SagaPhases.COMPLETED);
+                bookingLine.setAvailable(true);
+                bookingLine.setSagaId(updateBookingDTO.getSagaId());
+                bookingLine.setRoomDailyPrice(roomInfo.getDailyPrice());
+            }
+        });
+
         booking.getBookingLines().forEach(bookingLine -> {
             booking.setTotalPrice(
                     booking.getTotalPrice() + (bookingLine.getRoomDailyPrice() * bookingLine.getNumberOfNights()));
@@ -448,7 +464,8 @@ public class BookingServiceImpl implements BookingService {
         });
 
         booking.setStatusSaga(SagaPhases.COMPLETED);
-
+        booking.setWithBreakfast(updateBookingDTO.getWithBreakfast());
+        booking.setPeopleNumber(updateBookingDTO.getPeopleNumber());
         return true;
     }
 
