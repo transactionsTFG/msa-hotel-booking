@@ -73,7 +73,7 @@ public class EventHandlerRegistry {
         this.handlers.put(EventId.BEGIN_DELETE_HOTEL_BOOKINGLINE, beginDeleteHotelBookingLineEvent);
         this.handlers.put(EventId.COMMIT_DELETE_HOTEL_BOOKINGLINE, commitDeleteHotelBookingLineEvent);
         this.handlers.put(EventId.ROLLBACK_DELETE_HOTEL_BOOKINGLINE, rollbackDeleteHotelBookingLineEvent);
-        this.handlers.put(EventId.BEGIN_UPDATE_HOTEL_BOOKING, beginUpdateHotelBookingEvent);
+        this.handlers.put(EventId.UPDATE_RESERVATION_TRAVEL, beginUpdateHotelBookingEvent);
 
         this.handlers.put(EventId.CHECK_ROOMS_AVAILABILITY_BY_UPDATE_HOTEL_BOOKING,
                 checkRoomsAvailabilityByUpdateHotelBookingEvent);
