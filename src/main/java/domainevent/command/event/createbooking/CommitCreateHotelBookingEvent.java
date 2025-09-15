@@ -43,6 +43,7 @@ public class CommitCreateHotelBookingEvent extends BaseHandler {
                     .userId(command.getTravelUserId() + "")
                     .statusSaga(SagaPhases.COMPLETED)
                     .available(true)
+                    .peopleNumber(command.getPeopleNumber())
                     .build();
 
             List<BookingLineDTO> bookingLineDTOs = command.getRoomsInfo().stream().map(roomInfo -> {
