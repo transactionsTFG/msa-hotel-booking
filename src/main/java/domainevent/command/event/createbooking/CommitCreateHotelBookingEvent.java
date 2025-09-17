@@ -43,6 +43,7 @@ public class CommitCreateHotelBookingEvent extends BaseHandler {
                     .userId(command.getTravelUserId() + "")
                     .statusSaga(SagaPhases.COMPLETED)
                     .available(true)
+                    .withBreakfast(command.isWithBreakfast())
                     .peopleNumber(command.getPeopleNumber())
                     .build();
 

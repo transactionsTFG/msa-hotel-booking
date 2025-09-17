@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
-import com.rsa.cryptoj.e.b;
 
 import business.booking.Booking;
 import business.booking.BookingDTO;
@@ -192,7 +191,7 @@ public class BookingServiceImpl implements BookingService {
 
         if (booking == null)
             return null;
-
+        this.entityManager.refresh(booking);
         return BookingWithLinesDTO.builder()
                 .bookingDTO(booking.toDTO())
                 .bookingLines(booking.getBookingLines().stream().map(bookingLine -> {
