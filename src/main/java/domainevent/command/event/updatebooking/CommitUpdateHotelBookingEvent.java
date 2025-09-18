@@ -29,7 +29,6 @@ public class CommitUpdateHotelBookingEvent extends BaseHandler {
         LOGGER.info("JSON recibido: {}", json);
         EventData eventData = EventData.fromJson(json, UpdateHotelBookingCommand.class);
         UpdateHotelBookingCommand command = (UpdateHotelBookingCommand) eventData.getData();
-
         UpdateHotelBookingDTO updateHotelBookingDTO = UpdateHotelBookingDTO.builder()
                 .bookingId(command.getBookingId())
                 .sagaId(eventData.getSagaId())
@@ -39,14 +38,15 @@ public class CommitUpdateHotelBookingEvent extends BaseHandler {
                 .withBreakfast(command.isWithBreakfast())
                 .peopleNumber(command.getPeopleNumber())
                 .roomsInfo(command.getRoomsInfo())
+                .totalPrice(command.getTotalPrice())
                 .build();
-
         this.bookingService.commitModifyBooking(updateHotelBookingDTO);
         BookingWithLinesDTO bL = this.bookingService.getBookingWithLines(command.getBookingId());
         double totalPrice = bL.getBookingLines().stream()
                 .mapToDouble(line -> line.getNumberOfNights() * line.getRoomDailyPrice())
                 .sum();
         command.setTotalPrice(totalPrice);
+        this.bookingService.updatePriceBooking(command.getBookingId(), totalPrice, command.isWithBreakfast(), command.getPeopleNumber());
         eventData.setOperation(UpdateReservation.UPDATE_RESERVATION_ONLY_HOTEL_COMMIT);
         this.jmsCommandPublisher.publish(EventId.UPDATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** COMMIT TERMINADO CON EXITO EN SAGA MODIFICACION DE RESERVA *****");

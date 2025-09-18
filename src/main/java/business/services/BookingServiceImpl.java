@@ -161,6 +161,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public boolean updatePriceBooking(long bookingId, double newPrice, boolean withBreakfast, int peopleNumber) {
+        Booking booking = this.entityManager.find(Booking.class, bookingId);
+
+        if (booking == null)
+            return false;
+
+        booking.setTotalPrice(newPrice);
+        booking.setWithBreakfast(withBreakfast);
+        booking.setPeopleNumber(peopleNumber);
+        this.entityManager.merge(booking);
+        return true;
+    }
+
+
+
+    @Override
     public boolean checkRoomsAvailabilityByCreateHotelBooking(CreateHotelBookingDTO createHotelBookingDTO) {
 
         List<RoomInfo> rooms = createHotelBookingDTO.getRoomsInfo();
@@ -440,7 +456,7 @@ public class BookingServiceImpl implements BookingService {
             return false;
         }
 
-        booking.setTotalPrice(0);
+        //booking.setTotalPrice(0);
         updateBookingDTO.getRoomsInfo().forEach(roomInfo -> {
             TypedQuery<BookingLine> query = this.entityManager
                     .createNamedQuery("business.bookingLine.BookingLine.findByBookingIdAndRoomId", BookingLine.class);
