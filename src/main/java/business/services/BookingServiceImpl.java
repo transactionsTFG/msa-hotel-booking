@@ -469,6 +469,8 @@ public class BookingServiceImpl implements BookingService {
                 bookingLine.setAvailable(true);
                 bookingLine.setSagaId(updateBookingDTO.getSagaId());
                 bookingLine.setRoomDailyPrice(roomInfo.getDailyPrice());
+                bookingLine.setStartDate(updateBookingDTO.getStartDate());
+                bookingLine.setEndDate(updateBookingDTO.getEndDate());
             }
         });
 
@@ -529,6 +531,29 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean updateEndDateBookingLine(long bookingLineId, String newEndDate) {
+        BookingLine bookingLine = this.entityManager.find(BookingLine.class, bookingLineId, LockModeType.OPTIMISTIC);
+
+        if (bookingLine == null)
+            return false;
+
+        bookingLine.setEndDate(newEndDate);
+        this.entityManager.merge(bookingLine);
+        return true;
+    }
+
+    @Override
+    public List<Long> getLinesId(long bookingId) {
+        Booking booking = this.entityManager.find(Booking.class, bookingId, LockModeType.OPTIMISTIC);
+        if (booking == null) {
+            return List.of();
+        }
+        return booking.getBookingLines().stream()
+                .map(BookingLine::getId)
+                .toList();
     }
 
 }

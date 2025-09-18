@@ -47,6 +47,7 @@ public class CommitUpdateHotelBookingEvent extends BaseHandler {
                 .sum();
         command.setTotalPrice(totalPrice);
         this.bookingService.updatePriceBooking(command.getBookingId(), totalPrice, command.isWithBreakfast(), command.getPeopleNumber());
+        
         eventData.setOperation(UpdateReservation.UPDATE_RESERVATION_ONLY_HOTEL_COMMIT);
         this.jmsCommandPublisher.publish(EventId.UPDATE_RESERVATION_TRAVEL, eventData);
         LOGGER.info("***** COMMIT TERMINADO CON EXITO EN SAGA MODIFICACION DE RESERVA *****");

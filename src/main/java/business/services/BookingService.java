@@ -1,5 +1,7 @@
 package business.services;
 
+import java.util.List;
+
 import business.booking.BookingDTO;
 import business.booking.BookingWithLinesDTO;
 import business.dto.CreateHotelBookingDTO;
@@ -17,6 +19,10 @@ public interface BookingService {
     boolean updateOnlyReservation(BookingDTO bookingDTO);
 
     boolean updateBooking(BookingWithLinesDTO booking);
+
+    boolean updateEndDateBookingLine(long bookingLineId, String newEndDate);
+
+    List<Long> getLinesId(long bookingId);
 
     boolean updatePriceBooking(long bookingId, double newPrice, boolean withBreakfast, int peopleNumber);
 
